@@ -23,9 +23,17 @@ namespace Proiect_Cinema_Cozma_Marian.Pages.Movies
         public MovieData MovieD { get; set; }
         public int MovieID { get; set; }
         public int GenreID { get; set; }
-        public async Task OnGetAsync(int? id, int? genreID)
+        public string TitleSort { get; set; }
+        public string DirectorSort { get; set; }
+        public string CurrentFilter { get; set; }
+
+        public async Task OnGetAsync(int? id, int? genreID, string sortOrder, string searchString)
         {
             MovieD = new MovieData();
+            TitleSort = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            DirectorSort = String.IsNullOrEmpty(sortOrder) ? "director_desc" : "";
+            CurrentFilter = searchString;
+
 
             MovieD.Movies = await _context.Movie
             .Include(m => m.MovieGenres)
@@ -33,22 +41,30 @@ namespace Proiect_Cinema_Cozma_Marian.Pages.Movies
             .AsNoTracking()
             .OrderBy(m => m.Title)
             .ToListAsync();
-            if (id != null)
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                MovieD.Movies = MovieD.Movies.Where(s => s.Director.Contains(searchString)
+               || s.Title.Contains(searchString));
+            }
+                if (id != null)
             {
                 MovieID = id.Value;
                 Movie movie = MovieD.Movies
                 .Where(i => i.ID == id.Value).Single();
                 MovieD.Genres = movie.MovieGenres.Select(s => s.Genre);
             }
-        }
-
-        //
-        /*public async Task OnGetAsync()
-        {
-            if (_context.Movie != null)
+            switch (sortOrder)
             {
-                Movie = await _context.Movie.ToListAsync();
+                case "title_desc":
+                    MovieD.Movies = MovieD.Movies.OrderByDescending(s =>
+                   s.Title);
+                    break;
+                case "director_desc":
+                    MovieD.Movies = MovieD.Movies.OrderByDescending(s =>
+                   s.Director);
+                    break;
             }
-        }*/
+        }
     }
 }

@@ -44,6 +44,7 @@
                         <tr>
                             @{
                                 int cnt = 0;
+
                                 foreach (var gen in Model.AssignedGenreDataList)
                                 {
                                     if (cnt++ % 3 == 0)
@@ -52,18 +53,19 @@
                                     }
                                     @:<td>
                                         <input type="checkbox"
-                                               name="selectedCategories"
+                                               name="selectedGenres"
                                                value="@gen.GenreID"
-                                               @(Html.Raw(gen.Assigned ?
-"checked=\"checked\"" : "")) />
-                                    @gen.GenreID @: @gen.Name
-                            @:</td>
+                                               @(Html.Raw(gen.Assigned ? "checked=\"checked\"" : "")) />
+                                        
+                                        @gen.GenreID @: @gen.Name
+                                    @:</td>
                                 }
-                        @:</tr>
-                    }
+                            @:</tr>
+                            }
                     </table>
                 </div>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

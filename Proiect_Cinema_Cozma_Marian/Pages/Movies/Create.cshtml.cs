@@ -60,8 +60,8 @@ namespace Proiect_Cinema_Cozma_Marian.Pages.Movies
             }
             PopulateAssignedGenreData(_context, newMovie);
 
-                return Page();
-            }
+            return Page();
+        }
 
     }
 }
