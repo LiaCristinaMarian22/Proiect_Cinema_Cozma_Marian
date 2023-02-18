@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Proiect_Cinema_Cozma_Marian.Data;
 using Proiect_Cinema_Cozma_Marian.Models;
 
@@ -24,19 +23,24 @@ namespace Proiect_Cinema_Cozma_Marian.Pages.Movies
         {
             var movie = new Movie();
             movie.MovieGenres = new List<MovieGenre>();
+
             PopulateAssignedGenreData(_context, movie);
+
             return Page();
         }
 
         [BindProperty]
         public Movie Movie { get; set; }
 
+
+        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync(string[] selectedGenres)
         {
             var newMovie = new Movie();
             if (selectedGenres != null)
             {
                 newMovie.MovieGenres = new List<MovieGenre>();
+
                 foreach (var gen in selectedGenres)
                 {
                     var genToAdd = new MovieGenre
@@ -46,31 +50,18 @@ namespace Proiect_Cinema_Cozma_Marian.Pages.Movies
                     newMovie.MovieGenres.Add(genToAdd);
                 }
             }
-            if (await TryUpdateModelAsync<Movie>(
-            newMovie,
-            "Movie",
-            i => i.Title, i => i.Director,i => i.ReleaseDate))
+
+            if (await TryUpdateModelAsync<Movie>(newMovie, "Movie",
+            i => i.Title, i => i.Director, i => i.Actor1, i => i.Actor2, i => i.ReleaseDate))
             {
                 _context.Movie.Add(newMovie);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }
             PopulateAssignedGenreData(_context, newMovie);
-            return Page();
-        }
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
-        {
-          if (!ModelState.IsValid)
-            {
                 return Page();
             }
 
-            _context.Movie.Add(Movie);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
-        }
     }
 }
